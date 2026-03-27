@@ -47,3 +47,16 @@ logging:
     root: info
     web: info
     com.malgn: debug
+
+## swagger
+springdoc:
+  swagger-ui:
+    enabled: true
+  api-docs:
+    enabled: true
+
+## jwt
+jwt:
+  secret: c2ltcGxlLWNtcy1hcGkta2V5LWZvci1qd3Qtc2lnbmluZy0yMDI2
+  access-token-expiration: 1800000    # 30분 (ms)
+  refresh-token-expiration: 604800000 # 7일 (ms)
