@@ -28,6 +28,30 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
+    public void signup(MemberRequest.Signup request) {
+
+        if (memberRepository.existsByEmail(request.getEmail())) {
+            log.debug("회원가입 실패 - 이메일 중복: {}", request.getEmail());
+            throw new CustomException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다.");
+        }
+        if (memberRepository.existsByNickname(request.getNickname())) {
+            log.debug("회원가입 실패 - 닉네임 중복: {}", request.getNickname());
+            throw new CustomException(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다.");
+        }
+
+        Member member = Member.builder()
+                .email(request.getEmail())
+                .username(request.getUsername())
+                .nickname(request.getNickname())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role("USER")
+                .build();
+
+        memberRepository.save(member);
+        log.info("회원가입 성공: email={}", request.getEmail());
+    }
+
+    @Transactional
     public MemberResponse.Token login(MemberRequest.Login request) {
 
         Member member = memberRepository.findByEmail(request.getEmail())

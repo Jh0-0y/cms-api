@@ -3,7 +3,6 @@ package com.malgn.domain.member.controller;
 import com.malgn.domain.member.dto.MemberRequest;
 import com.malgn.domain.member.dto.MemberResponse;
 import com.malgn.domain.member.service.AuthService;
-import com.malgn.domain.member.service.MemberService;
 import com.malgn.jwt.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
@@ -18,13 +17,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final MemberService memberService;
     private final AuthService authService;
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public void signup(@Validated @RequestBody MemberRequest.Signup request) {
-        memberService.signup(request);
+        authService.signup(request);
     }
 
     @PostMapping("/login")
