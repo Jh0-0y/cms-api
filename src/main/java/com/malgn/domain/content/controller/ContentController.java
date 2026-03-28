@@ -51,7 +51,7 @@ public class ContentController {
     public ContentResponse.Detail createContent(
             @Validated @RequestBody ContentRequest.Create request,
             @AuthenticationPrincipal CustomUserDetails principal) {
-        return contentService.createContent(request, principal);
+        return contentService.createContent(request, principal.getMember());
     }
 
     @Operation(summary = "콘텐츠 상세 조회", description = "콘텐츠 단건을 조회합니다. 조회 시 조회수가 1 증가합니다.")
@@ -79,7 +79,7 @@ public class ContentController {
             @Parameter(description = "콘텐츠 ID") @PathVariable Long id,
             @Validated @RequestBody ContentRequest.Update request,
             @AuthenticationPrincipal CustomUserDetails principal) {
-        return contentService.updateContent(id, request, principal);
+        return contentService.updateContent(id, request, principal.getMember());
     }
 
     @Operation(summary = "콘텐츠 삭제", description = "콘텐츠를 소프트 삭제합니다. 작성자 본인 또는 ADMIN만 가능합니다.")
@@ -95,7 +95,7 @@ public class ContentController {
     public void deleteContent(
             @Parameter(description = "콘텐츠 ID") @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails principal) {
-        contentService.deleteContent(id, principal);
+        contentService.deleteContent(id, principal.getMember());
     }
 
 }

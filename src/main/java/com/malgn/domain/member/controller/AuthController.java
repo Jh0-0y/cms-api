@@ -1,7 +1,8 @@
 package com.malgn.domain.member.controller;
 
 import com.malgn.domain.member.dto.MemberRequest;
-import com.malgn.domain.member.dto.MemberResponse;
+import com.malgn.domain.member.dto.TokenRequest;
+import com.malgn.domain.member.dto.TokenResponse;
 import com.malgn.domain.member.service.AuthService;
 import com.malgn.configure.security.detail.CustomUserDetails;
 
@@ -44,7 +45,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호 불일치")
     })
     @PostMapping("/login")
-    public MemberResponse.Token login(@Validated @RequestBody MemberRequest.Login request) {
+    public TokenResponse.Token login(@Validated @RequestBody MemberRequest.Login request) {
         return authService.login(request);
     }
 
@@ -54,7 +55,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Refresh Token 만료 또는 유효하지 않은 토큰")
     })
     @PostMapping("/refresh")
-    public MemberResponse.AccessToken refresh(@Validated @RequestBody MemberRequest.Refresh request) {
+    public TokenResponse.AccessToken refresh(@Validated @RequestBody TokenRequest.Refresh request) {
         return authService.refresh(request);
     }
 
@@ -67,7 +68,7 @@ public class AuthController {
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@AuthenticationPrincipal CustomUserDetails principal) {
-        authService.logout(principal.getMemberId());
+        authService.logout(principal.getMember().getId());
     }
 
 }

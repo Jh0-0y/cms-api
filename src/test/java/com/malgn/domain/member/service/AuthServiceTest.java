@@ -2,9 +2,11 @@ package com.malgn.domain.member.service;
 
 import com.malgn.common.exception.CustomException;
 import com.malgn.domain.member.dto.MemberRequest;
-import com.malgn.domain.member.dto.MemberResponse;
+import com.malgn.domain.member.dto.TokenRequest;
+import com.malgn.domain.member.dto.TokenResponse;
 import com.malgn.domain.member.entity.Member;
 import com.malgn.domain.member.entity.RefreshToken;
+import com.malgn.domain.member.entity.Role;
 import com.malgn.domain.member.repository.MemberRepository;
 import com.malgn.domain.member.repository.RefreshTokenRepository;
 import com.malgn.configure.security.jwt.JwtTokenProvider;
@@ -25,6 +27,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -56,7 +59,7 @@ class AuthServiceTest {
                 .username("사용자")
                 .nickname("user")
                 .password("encodedPassword")
-                .role("USER")
+                .role(Role.USER)
                 .build();
         ReflectionTestUtils.setField(member, "id", 1L);
     }
@@ -85,7 +88,7 @@ class AuthServiceTest {
 
             authService.signup(request);
 
-            then(memberRepository).should(times(1)).save(org.mockito.ArgumentMatchers.any(Member.class));
+            then(memberRepository).should(times(1)).save(any(Member.class));
         }
 
         @Test
@@ -133,7 +136,7 @@ class AuthServiceTest {
             given(jwtTokenProvider.createRefreshToken(1L)).willReturn("refreshToken");
             given(refreshTokenRepository.findByMemberId(1L)).willReturn(Optional.empty());
 
-            MemberResponse.Token result = authService.login(request);
+            TokenResponse.Token result = authService.login(request);
 
             assertThat(result.getAccessToken()).isEqualTo("accessToken");
             assertThat(result.getRefreshToken()).isEqualTo("refreshToken");
@@ -166,12 +169,12 @@ class AuthServiceTest {
     @DisplayName("토큰 재발급")
     class Refresh {
 
-        private MemberRequest.Refresh request;
+        private TokenRequest.Refresh request;
         private RefreshToken savedToken;
 
         @BeforeEach
         void setUp() {
-            request = new MemberRequest.Refresh();
+            request = new TokenRequest.Refresh();
             ReflectionTestUtils.setField(request, "refreshToken", "validRefreshToken");
 
             savedToken = RefreshToken.builder()
@@ -187,7 +190,7 @@ class AuthServiceTest {
             given(refreshTokenRepository.findByMemberId(1L)).willReturn(Optional.of(savedToken));
             given(jwtTokenProvider.createAccessToken(1L)).willReturn("newAccessToken");
 
-            MemberResponse.AccessToken result = authService.refresh(request);
+            TokenResponse.AccessToken result = authService.refresh(request);
 
             assertThat(result.getAccessToken()).isEqualTo("newAccessToken");
         }

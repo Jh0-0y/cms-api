@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class MemberResponse {
+public class TokenResponse {
 
     @Schema(description = "로그인 응답 (Access Token + Refresh Token)")
     @Getter

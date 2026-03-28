@@ -6,8 +6,7 @@ import com.malgn.domain.content.dto.ContentResponse;
 import com.malgn.domain.content.entity.Content;
 import com.malgn.domain.content.repository.ContentRepository;
 import com.malgn.domain.member.entity.Member;
-import com.malgn.domain.member.repository.MemberRepository;
-import com.malgn.configure.security.detail.CustomUserDetails;
+import com.malgn.domain.member.entity.Role;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,18 +33,13 @@ class ContentServiceTest {
     @Mock
     private ContentRepository contentRepository;
 
-    @Mock
-    private MemberRepository memberRepository;
-
     @InjectMocks
     private ContentService contentService;
 
     private Member member;
+    private Member adminMember;
     private Member otherMember;
     private Content content;
-    private CustomUserDetails userPrincipal;
-    private CustomUserDetails adminPrincipal;
-    private CustomUserDetails otherPrincipal;
 
     @BeforeEach
     void setUp() {
@@ -54,16 +48,25 @@ class ContentServiceTest {
                 .username("사용자")
                 .nickname("user")
                 .password("encoded")
-                .role("USER")
+                .role(Role.USER)
                 .build();
         ReflectionTestUtils.setField(member, "id", 1L);
+
+        adminMember = Member.builder()
+                .email("admin@malgn.com")
+                .username("관리자")
+                .nickname("admin")
+                .password("encoded")
+                .role(Role.ADMIN)
+                .build();
+        ReflectionTestUtils.setField(adminMember, "id", 2L);
 
         otherMember = Member.builder()
                 .email("other@malgn.com")
                 .username("다른사용자")
                 .nickname("other")
                 .password("encoded")
-                .role("USER")
+                .role(Role.USER)
                 .build();
         ReflectionTestUtils.setField(otherMember, "id", 3L);
 
@@ -73,10 +76,6 @@ class ContentServiceTest {
                 .createdBy("user")
                 .member(member)
                 .build();
-
-        userPrincipal = new CustomUserDetails(1L, "user@malgn.com", "user", "USER");
-        adminPrincipal = new CustomUserDetails(2L, "admin@malgn.com", "admin", "ADMIN");
-        otherPrincipal = new CustomUserDetails(3L, "other@malgn.com", "other", "USER");
     }
 
     @Nested
@@ -128,26 +127,11 @@ class ContentServiceTest {
             request.setTitle("새 제목");
             request.setDescription("새 내용");
 
-            given(memberRepository.findById(1L)).willReturn(Optional.of(member));
-
-            ContentResponse.Detail result = contentService.createContent(request, userPrincipal);
+            ContentResponse.Detail result = contentService.createContent(request, member);
 
             assertThat(result.getTitle()).isEqualTo("새 제목");
             assertThat(result.getCreatedBy()).isEqualTo("user");
             then(contentRepository).should(times(1)).save(org.mockito.ArgumentMatchers.any(Content.class));
-        }
-
-        @Test
-        @DisplayName("실패 - 존재하지 않는 회원")
-        void memberNotFound() {
-            ContentRequest.Create request = new ContentRequest.Create();
-            request.setTitle("새 제목");
-
-            given(memberRepository.findById(1L)).willReturn(Optional.empty());
-
-            assertThatThrownBy(() -> contentService.createContent(request, userPrincipal))
-                    .isInstanceOf(CustomException.class)
-                    .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.NOT_FOUND));
         }
 
     }
@@ -170,7 +154,7 @@ class ContentServiceTest {
         void successByOwner() {
             given(contentRepository.findById(1L)).willReturn(Optional.of(content));
 
-            ContentResponse.Detail result = contentService.updateContent(1L, request, userPrincipal);
+            ContentResponse.Detail result = contentService.updateContent(1L, request, member);
 
             assertThat(result.getTitle()).isEqualTo("수정된 제목");
             assertThat(result.getLastModifiedBy()).isEqualTo("user");
@@ -181,7 +165,7 @@ class ContentServiceTest {
         void successByAdmin() {
             given(contentRepository.findById(1L)).willReturn(Optional.of(content));
 
-            ContentResponse.Detail result = contentService.updateContent(1L, request, adminPrincipal);
+            ContentResponse.Detail result = contentService.updateContent(1L, request, adminMember);
 
             assertThat(result.getTitle()).isEqualTo("수정된 제목");
             assertThat(result.getLastModifiedBy()).isEqualTo("admin");
@@ -192,7 +176,7 @@ class ContentServiceTest {
         void notFound() {
             given(contentRepository.findById(99L)).willReturn(Optional.empty());
 
-            assertThatThrownBy(() -> contentService.updateContent(99L, request, userPrincipal))
+            assertThatThrownBy(() -> contentService.updateContent(99L, request, member))
                     .isInstanceOf(CustomException.class)
                     .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.NOT_FOUND));
         }
@@ -203,7 +187,7 @@ class ContentServiceTest {
             content.delete();
             given(contentRepository.findById(1L)).willReturn(Optional.of(content));
 
-            assertThatThrownBy(() -> contentService.updateContent(1L, request, userPrincipal))
+            assertThatThrownBy(() -> contentService.updateContent(1L, request, member))
                     .isInstanceOf(CustomException.class)
                     .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.NOT_FOUND));
         }
@@ -213,7 +197,7 @@ class ContentServiceTest {
         void forbidden() {
             given(contentRepository.findById(1L)).willReturn(Optional.of(content));
 
-            assertThatThrownBy(() -> contentService.updateContent(1L, request, otherPrincipal))
+            assertThatThrownBy(() -> contentService.updateContent(1L, request, otherMember))
                     .isInstanceOf(CustomException.class)
                     .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.FORBIDDEN));
         }
@@ -229,7 +213,7 @@ class ContentServiceTest {
         void successByOwner() {
             given(contentRepository.findById(1L)).willReturn(Optional.of(content));
 
-            contentService.deleteContent(1L, userPrincipal);
+            contentService.deleteContent(1L, member);
 
             assertThat(content.getIsDeleted()).isTrue();
         }
@@ -239,7 +223,7 @@ class ContentServiceTest {
         void successByAdmin() {
             given(contentRepository.findById(1L)).willReturn(Optional.of(content));
 
-            contentService.deleteContent(1L, adminPrincipal);
+            contentService.deleteContent(1L, adminMember);
 
             assertThat(content.getIsDeleted()).isTrue();
         }
@@ -249,7 +233,7 @@ class ContentServiceTest {
         void notFound() {
             given(contentRepository.findById(99L)).willReturn(Optional.empty());
 
-            assertThatThrownBy(() -> contentService.deleteContent(99L, userPrincipal))
+            assertThatThrownBy(() -> contentService.deleteContent(99L, member))
                     .isInstanceOf(CustomException.class)
                     .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.NOT_FOUND));
         }
@@ -260,7 +244,7 @@ class ContentServiceTest {
             content.delete();
             given(contentRepository.findById(1L)).willReturn(Optional.of(content));
 
-            assertThatThrownBy(() -> contentService.deleteContent(1L, userPrincipal))
+            assertThatThrownBy(() -> contentService.deleteContent(1L, member))
                     .isInstanceOf(CustomException.class)
                     .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.NOT_FOUND));
         }
@@ -270,7 +254,7 @@ class ContentServiceTest {
         void forbidden() {
             given(contentRepository.findById(1L)).willReturn(Optional.of(content));
 
-            assertThatThrownBy(() -> contentService.deleteContent(1L, otherPrincipal))
+            assertThatThrownBy(() -> contentService.deleteContent(1L, otherMember))
                     .isInstanceOf(CustomException.class)
                     .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.FORBIDDEN));
         }

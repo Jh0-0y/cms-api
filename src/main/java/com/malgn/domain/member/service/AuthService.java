@@ -2,9 +2,11 @@ package com.malgn.domain.member.service;
 
 import com.malgn.common.exception.CustomException;
 import com.malgn.domain.member.dto.MemberRequest;
-import com.malgn.domain.member.dto.MemberResponse;
+import com.malgn.domain.member.dto.TokenRequest;
+import com.malgn.domain.member.dto.TokenResponse;
 import com.malgn.domain.member.entity.Member;
 import com.malgn.domain.member.entity.RefreshToken;
+import com.malgn.domain.member.entity.Role;
 import com.malgn.domain.member.repository.MemberRepository;
 import com.malgn.domain.member.repository.RefreshTokenRepository;
 import com.malgn.configure.security.jwt.JwtTokenProvider;
@@ -44,7 +46,7 @@ public class AuthService {
                 .username(request.getUsername())
                 .nickname(request.getNickname())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role("USER")
+                .role(Role.USER)
                 .build();
 
         memberRepository.save(member);
@@ -52,7 +54,7 @@ public class AuthService {
     }
 
     @Transactional
-    public MemberResponse.Token login(MemberRequest.Login request) {
+    public TokenResponse.Token login(MemberRequest.Login request) {
 
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> {
@@ -78,11 +80,11 @@ public class AuthService {
                 );
 
         log.info("로그인 성공: email={}", member.getEmail());
-        return MemberResponse.Token.of(accessToken, refreshToken);
+        return TokenResponse.Token.of(accessToken, refreshToken);
     }
 
     @Transactional
-    public MemberResponse.AccessToken refresh(MemberRequest.Refresh request) {
+    public TokenResponse.AccessToken refresh(TokenRequest.Refresh request) {
         log.debug("토큰 재발급 시도");
 
         Long memberId = jwtTokenProvider.getMemberId(request.getRefreshToken());
@@ -98,11 +100,10 @@ public class AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
 
-        // Access Token에 userId만 포함하므로 member 조회 불필요
         String newAccessToken = jwtTokenProvider.createAccessToken(memberId);
 
         log.info("토큰 재발급 성공: memberId={}", memberId);
-        return MemberResponse.AccessToken.of(newAccessToken);
+        return TokenResponse.AccessToken.of(newAccessToken);
     }
 
     @Transactional

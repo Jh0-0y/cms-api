@@ -60,14 +60,4 @@ public class MemberRequest {
 
     }
 
-    @Schema(description = "Access Token 재발급 요청")
-    @Getter
-    public static class Refresh {
-
-        @Schema(description = "Refresh Token", example = "eyJ...")
-        @NotBlank(message = "Refresh Token은 필수입니다.")
-        private String refreshToken;
-
-    }
-
 }

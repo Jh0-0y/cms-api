@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final CustomUserDetailsService userDetailsService; // 추가: loadUserById 호출용
+    private final CustomUserDetailsService userDetailsService;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -40,17 +40,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(token)) {
             try {
-                // 토큰에서 userId만 추출 (토큰에 email/role 등 민감 정보 없음)
                 Long userId = jwtTokenProvider.getMemberId(token);
-
-                // DB에서 최신 유저 정보 조회 - 권한 변경, 계정 정지 등이 즉시 반영됨
                 CustomUserDetails principal = userDetailsService.loadUserById(userId);
-
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
+                saveAuthentication(principal);
             } catch (CustomException e) {
                 sendErrorResponse(response, e.getStatus(), e.getMessage());
                 return;
@@ -58,6 +50,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void saveAuthentication(CustomUserDetails principal) {
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private String resolveToken(HttpServletRequest request) {
