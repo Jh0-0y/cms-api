@@ -1,6 +1,6 @@
 package com.malgn.configure.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.malgn.common.dto.CustomResponse;
 import com.malgn.jwt.JwtAuthenticationFilter;
 import com.malgn.jwt.JwtTokenProvider;

@@ -36,6 +36,9 @@ out/
 ### VS Code ###
 .vscode/
 
+# QueryDSL Q클래스
+src/main/generated/
+
 ### macOS ###
 .DS_Store
 

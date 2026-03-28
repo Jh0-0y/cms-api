@@ -1,6 +1,6 @@
 package com.malgn.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.malgn.common.dto.CustomResponse;
 import com.malgn.common.exception.CustomException;
 
