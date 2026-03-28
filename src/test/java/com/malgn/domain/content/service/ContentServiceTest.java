@@ -7,7 +7,7 @@ import com.malgn.domain.content.entity.Content;
 import com.malgn.domain.content.repository.ContentRepository;
 import com.malgn.domain.member.entity.Member;
 import com.malgn.domain.member.repository.MemberRepository;
-import com.malgn.jwt.CustomUserDetails;
+import com.malgn.configure.security.detail.CustomUserDetails;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

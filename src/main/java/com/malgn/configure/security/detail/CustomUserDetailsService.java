@@ -1,4 +1,4 @@
-package com.malgn.jwt;
+package com.malgn.configure.security.detail;
 
 import com.malgn.domain.member.entity.Member;
 import com.malgn.domain.member.repository.MemberRepository;

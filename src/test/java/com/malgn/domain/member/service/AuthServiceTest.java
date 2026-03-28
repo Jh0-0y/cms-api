@@ -7,7 +7,7 @@ import com.malgn.domain.member.entity.Member;
 import com.malgn.domain.member.entity.RefreshToken;
 import com.malgn.domain.member.repository.MemberRepository;
 import com.malgn.domain.member.repository.RefreshTokenRepository;
-import com.malgn.jwt.JwtTokenProvider;
+import com.malgn.configure.security.jwt.JwtTokenProvider;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -3,7 +3,7 @@ package com.malgn.domain.member.controller;
 import com.malgn.domain.member.dto.MemberRequest;
 import com.malgn.domain.member.dto.MemberResponse;
 import com.malgn.domain.member.service.AuthService;
-import com.malgn.jwt.CustomUserDetails;
+import com.malgn.configure.security.detail.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 

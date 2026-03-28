@@ -2,9 +2,9 @@ package com.malgn.configure.security;
 
 import tools.jackson.databind.ObjectMapper;
 import com.malgn.common.dto.CustomResponse;
-import com.malgn.jwt.CustomUserDetailsService;
-import com.malgn.jwt.JwtAuthenticationFilter;
-import com.malgn.jwt.JwtTokenProvider;
+import com.malgn.configure.security.detail.CustomUserDetailsService;
+import com.malgn.configure.security.jwt.JwtAuthenticationFilter;
+import com.malgn.configure.security.jwt.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.malgn.jwt;
+package com.malgn.configure.security.jwt;
 
 import com.malgn.common.exception.CustomException;
 

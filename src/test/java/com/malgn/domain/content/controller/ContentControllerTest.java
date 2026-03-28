@@ -1,7 +1,7 @@
 package com.malgn.domain.content.controller;
 
 import com.malgn.domain.content.service.ContentService;
-import com.malgn.jwt.JwtTokenProvider;
+import com.malgn.configure.security.jwt.JwtTokenProvider;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
