@@ -38,6 +38,6 @@ create table contents
     created_by         varchar(50)        not null,
     last_modified_date timestamp,
     last_modified_by   varchar(50),
-    member_id          bigint,
+    member_id          bigint             not null,
     constraint fk_contents_member foreign key (member_id) references members (id)
 );
