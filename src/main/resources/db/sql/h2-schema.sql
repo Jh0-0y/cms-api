@@ -35,9 +35,9 @@ create table contents
     view_count         bigint             not null default 0,
     is_deleted         boolean            not null default false,
     created_date       timestamp default now(),
-    created_by         varchar(50)        not null,
+    created_by         bigint             not null,
     last_modified_date timestamp,
-    last_modified_by   varchar(50),
-    member_id          bigint             not null,
-    constraint fk_contents_member foreign key (member_id) references members (id)
+    last_modified_by   bigint,
+    constraint fk_contents_created_by foreign key (created_by) references members (id),
+    constraint fk_contents_last_modified_by foreign key (last_modified_by) references members (id)
 );

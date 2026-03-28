@@ -6,7 +6,6 @@ import com.malgn.domain.content.dto.ContentResponse;
 import com.malgn.domain.content.entity.Content;
 import com.malgn.domain.content.repository.ContentRepository;
 import com.malgn.domain.member.entity.Member;
-import com.malgn.domain.member.entity.Role;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,28 +39,27 @@ public class ContentService {
         Content content = Content.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
-                .createdBy(member.getNickname())
-                .member(member)
+                .createdBy(member)
                 .build();
 
         contentRepository.save(content);
-        log.info("콘텐츠 생성 성공: id={}, createdBy={}", content.getId(), content.getCreatedBy());
+        log.info("콘텐츠 생성 성공: id={}, createdBy={}", content.getId(), content.getCreatedBy().getNickname());
         return ContentResponse.Detail.of(content);
     }
 
     @Transactional
     public ContentResponse.Detail updateContent(Long id, ContentRequest.Update request, Member member) {
         Content content = findActiveContent(id);
-        checkPermission(content, member, "수정");
-        content.update(request.getTitle(), request.getDescription(), member.getNickname());
-        log.info("콘텐츠 수정 성공: id={}, lastModifiedBy={}", content.getId(), content.getLastModifiedBy());
+        content.validatePermission(member);
+        content.update(request.getTitle(), request.getDescription(), member);
+        log.info("콘텐츠 수정 성공: id={}, lastModifiedBy={}", content.getId(), content.getLastModifiedBy().getNickname());
         return ContentResponse.Detail.of(content);
     }
 
     @Transactional
     public void deleteContent(Long id, Member member) {
         Content content = findActiveContent(id);
-        checkPermission(content, member, "삭제");
+        content.validatePermission(member);
         content.delete();
         log.info("콘텐츠 삭제 성공: id={}", id);
     }
@@ -79,13 +77,5 @@ public class ContentService {
         return content;
     }
 
-    private void checkPermission(Content content, Member member, String action) {
-        boolean isOwner = content.getMember().getId().equals(member.getId());
-        boolean isAdmin = member.getRole() == Role.ADMIN;
-        if (!isOwner && !isAdmin) {
-            log.debug("콘텐츠 {} 실패 - 권한 없음: contentId={}, memberId={}", action, content.getId(), member.getId());
-            throw new CustomException(HttpStatus.FORBIDDEN, action + " 권한이 없습니다.");
-        }
-    }
 
 }

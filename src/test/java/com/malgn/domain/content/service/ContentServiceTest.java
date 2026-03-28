@@ -73,8 +73,7 @@ class ContentServiceTest {
         content = Content.builder()
                 .title("테스트 제목")
                 .description("테스트 내용")
-                .createdBy("user")
-                .member(member)
+                .createdBy(member)
                 .build();
     }
 

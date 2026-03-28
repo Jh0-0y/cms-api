@@ -47,9 +47,9 @@ public class ContentResponse {
                     .title(content.getTitle())
                     .description(content.getDescription())
                     .viewCount(content.getViewCount())
-                    .createdBy(content.getCreatedBy())
+                    .createdBy(content.getCreatedBy().getNickname())
                     .createdDate(content.getCreatedDate())
-                    .lastModifiedBy(content.getLastModifiedBy())
+                    .lastModifiedBy(content.getLastModifiedBy() != null ? content.getLastModifiedBy().getNickname() : null)
                     .lastModifiedDate(content.getLastModifiedDate())
                     .build();
         }
@@ -81,7 +81,7 @@ public class ContentResponse {
                     .id(content.getId())
                     .title(content.getTitle())
                     .viewCount(content.getViewCount())
-                    .createdBy(content.getCreatedBy())
+                    .createdBy(content.getCreatedBy().getNickname())
                     .createdDate(content.getCreatedDate())
                     .build();
         }
