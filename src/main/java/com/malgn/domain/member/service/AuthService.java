@@ -65,8 +65,7 @@ public class AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(
-                member.getId(), member.getEmail(), member.getNickname(), member.getRole());
+        String accessToken = jwtTokenProvider.createAccessToken(member.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
 
         refreshTokenRepository.findByMemberId(member.getId())
@@ -99,11 +98,8 @@ public class AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."));
-
-        String newAccessToken = jwtTokenProvider.createAccessToken(
-                member.getId(), member.getEmail(), member.getNickname(), member.getRole());
+        // Access Token에 userId만 포함하므로 member 조회 불필요
+        String newAccessToken = jwtTokenProvider.createAccessToken(memberId);
 
         log.info("토큰 재발급 성공: memberId={}", memberId);
         return MemberResponse.AccessToken.of(newAccessToken);

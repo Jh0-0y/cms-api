@@ -129,7 +129,7 @@ class AuthServiceTest {
         void success() {
             given(memberRepository.findByEmail("user@malgn.com")).willReturn(Optional.of(member));
             given(passwordEncoder.matches("password123", "encodedPassword")).willReturn(true);
-            given(jwtTokenProvider.createAccessToken(1L, "user@malgn.com", "user", "USER")).willReturn("accessToken");
+            given(jwtTokenProvider.createAccessToken(1L)).willReturn("accessToken");
             given(jwtTokenProvider.createRefreshToken(1L)).willReturn("refreshToken");
             given(refreshTokenRepository.findByMemberId(1L)).willReturn(Optional.empty());
 
@@ -185,8 +185,7 @@ class AuthServiceTest {
         void success() {
             given(jwtTokenProvider.getMemberId("validRefreshToken")).willReturn(1L);
             given(refreshTokenRepository.findByMemberId(1L)).willReturn(Optional.of(savedToken));
-            given(memberRepository.findById(1L)).willReturn(Optional.of(member));
-            given(jwtTokenProvider.createAccessToken(1L, "user@malgn.com", "user", "USER")).willReturn("newAccessToken");
+            given(jwtTokenProvider.createAccessToken(1L)).willReturn("newAccessToken");
 
             MemberResponse.AccessToken result = authService.refresh(request);
 

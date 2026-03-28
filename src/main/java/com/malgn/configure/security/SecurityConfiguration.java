@@ -2,6 +2,7 @@ package com.malgn.configure.security;
 
 import tools.jackson.databind.ObjectMapper;
 import com.malgn.common.dto.CustomResponse;
+import com.malgn.jwt.CustomUserDetailsService;
 import com.malgn.jwt.JwtAuthenticationFilter;
 import com.malgn.jwt.JwtTokenProvider;
 
@@ -31,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 public class SecurityConfiguration {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final CustomUserDetailsService userDetailsService;
     private final ObjectMapper objectMapper;
 
     @Bean
@@ -40,7 +42,7 @@ public class SecurityConfiguration {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenProvider, objectMapper);
+        return new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService, objectMapper);
     }
 
     @Bean

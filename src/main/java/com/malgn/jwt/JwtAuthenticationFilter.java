@@ -4,8 +4,6 @@ import tools.jackson.databind.ObjectMapper;
 import com.malgn.common.dto.CustomResponse;
 import com.malgn.common.exception.CustomException;
 
-import io.jsonwebtoken.Claims;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final CustomUserDetailsService userDetailsService; // 추가: loadUserById 호출용
     private final ObjectMapper objectMapper;
 
     @Override
@@ -39,14 +38,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(token)) {
             try {
-                Claims claims = jwtTokenProvider.parseClaims(token);
+                // 토큰에서 userId만 추출 (토큰에 email/role 등 민감 정보 없음)
+                Long userId = jwtTokenProvider.getMemberId(token);
 
-                CustomUserDetails principal = new CustomUserDetails(
-                        Long.parseLong(claims.getSubject()),
-                        claims.get("email", String.class),
-                        claims.get("nickname", String.class),
-                        claims.get("role", String.class)
-                );
+                // DB에서 최신 유저 정보 조회 - 권한 변경, 계정 정지 등이 즉시 반영됨
+                CustomUserDetails principal = userDetailsService.loadUserById(userId);
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
 

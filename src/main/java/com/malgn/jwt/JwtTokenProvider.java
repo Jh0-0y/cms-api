@@ -32,12 +32,10 @@ public class JwtTokenProvider {
         this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
-    public String createAccessToken(Long memberId, String email, String nickname, String role) {
+    // userId만 포함 - 권한 등 민감 정보를 토큰에 담지 않고 필터에서 DB 조회로 최신화
+    public String createAccessToken(Long memberId) {
         return Jwts.builder()
                 .subject(String.valueOf(memberId))
-                .claim("email", email)
-                .claim("nickname", nickname)
-                .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
                 .signWith(secretKey)
