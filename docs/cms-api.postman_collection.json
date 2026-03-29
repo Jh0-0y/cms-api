@@ -1,0 +1,381 @@
+{
+  "info": {
+    "name": "Simple CMS REST API",
+    "description": "Simple CMS REST API Postman Collection\n\n로그인 후 쿠키가 자동으로 저장되어 인증이 필요한 API에 자동으로 포함됩니다.\nPostman 설정에서 'Automatically follow redirects'와 'Send cookies' 옵션이 활성화되어 있어야 합니다.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "회원가입",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/signup", "host": ["{{baseUrl}}"], "path": ["api", "auth", "signup"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@malgn.com\",\n  \"username\": \"신규사원\",\n  \"nickname\": \"신규닉네임\",\n  \"password\": \"password123\",\n  \"passwordConfirm\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "로그인 (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@malgn.com\",\n  \"password\": \"admin123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "로그인 (USER - 맑은사원)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@malgn.com\",\n  \"password\": \"user123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "로그인 (USER - 하늘사원)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user2@malgn.com\",\n  \"password\": \"user456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Access Token 재발급",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/auth/refresh", "host": ["{{baseUrl}}"], "path": ["api", "auth", "refresh"] }
+          }
+        },
+        {
+          "name": "로그아웃",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/auth/logout", "host": ["{{baseUrl}}"], "path": ["api", "auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Members",
+      "item": [
+        {
+          "name": "내 정보 조회",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/members/me", "host": ["{{baseUrl}}"], "path": ["api", "members", "me"] }
+          }
+        },
+        {
+          "name": "닉네임 변경",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/members/me/nickname", "host": ["{{baseUrl}}"], "path": ["api", "members", "me", "nickname"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nickname\": \"변경된닉네임\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contents",
+      "item": [
+        {
+          "name": "콘텐츠 목록 조회",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/contents?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "contents"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "keyword", "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "콘텐츠 목록 조회 (키워드 검색)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/contents?keyword=사원",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "contents"],
+              "query": [
+                { "key": "keyword", "value": "사원" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "콘텐츠 단건 조회",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contents/1", "host": ["{{baseUrl}}"], "path": ["api", "contents", "1"] }
+          }
+        },
+        {
+          "name": "콘텐츠 생성",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/contents", "host": ["{{baseUrl}}"], "path": ["api", "contents"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"새 콘텐츠 제목\",\n  \"description\": \"새 콘텐츠 내용입니다.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "콘텐츠 수정",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/contents/3", "host": ["{{baseUrl}}"], "path": ["api", "contents", "3"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"수정된 제목\",\n  \"description\": \"수정된 내용입니다.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "콘텐츠 삭제",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contents/3", "host": ["{{baseUrl}}"], "path": ["api", "contents", "3"] }
+          }
+        },
+        {
+          "name": "콘텐츠 복구",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contents/4/restore", "host": ["{{baseUrl}}"], "path": ["api", "contents", "4", "restore"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "시나리오 1 - 권한 검증",
+      "description": "USER끼리 서로 수정/삭제 불가, ADMIN은 모두 가능한지 검증합니다.",
+      "item": [
+        {
+          "name": "1. 로그인 (맑은사원)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@malgn.com\",\n  \"password\": \"user123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2. 관리자 게시글 수정 시도 → 403",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/contents/1", "host": ["{{baseUrl}}"], "path": ["api", "contents", "1"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"수정 시도\",\n  \"description\": \"403이 반환되어야 합니다.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3. 본인 게시글 수정 → 200",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/contents/3", "host": ["{{baseUrl}}"], "path": ["api", "contents", "3"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"맑은사원이 수정함\",\n  \"description\": \"본인 게시글 수정 성공\"\n}"
+            }
+          }
+        },
+        {
+          "name": "4. 로그인 (하늘사원)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user2@malgn.com\",\n  \"password\": \"user456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "5. 맑은사원 게시글 수정 시도 → 403",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/contents/3", "host": ["{{baseUrl}}"], "path": ["api", "contents", "3"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"수정 시도\",\n  \"description\": \"403이 반환되어야 합니다.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "6. 로그인 (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@malgn.com\",\n  \"password\": \"admin123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "7. 타인 게시글 수정 (ADMIN) → 200",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/contents/3", "host": ["{{baseUrl}}"], "path": ["api", "contents", "3"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"ADMIN이 수정함\",\n  \"description\": \"ADMIN은 모든 게시글 수정 가능\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "시나리오 2 - 소프트 삭제 & 복구",
+      "description": "소프트 삭제된 콘텐츠는 조회 불가, 복구 후 다시 조회 가능한지 검증합니다.",
+      "item": [
+        {
+          "name": "1. 로그인 (맑은사원)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@malgn.com\",\n  \"password\": \"user123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2. 삭제된 콘텐츠 단건 조회 → 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contents/4", "host": ["{{baseUrl}}"], "path": ["api", "contents", "4"] }
+          }
+        },
+        {
+          "name": "3. 콘텐츠 복구 → 200",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contents/4/restore", "host": ["{{baseUrl}}"], "path": ["api", "contents", "4", "restore"] }
+          }
+        },
+        {
+          "name": "4. 복구된 콘텐츠 단건 조회 → 200",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contents/4", "host": ["{{baseUrl}}"], "path": ["api", "contents", "4"] }
+          }
+        },
+        {
+          "name": "5. 목록 조회 - ID 4번 노출 확인",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contents", "host": ["{{baseUrl}}"], "path": ["api", "contents"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "시나리오 3 - 닉네임 변경 즉시 반영",
+      "description": "닉네임 변경 시 해당 회원이 작성한 모든 콘텐츠에 즉시 반영되는지 검증합니다.",
+      "item": [
+        {
+          "name": "1. 로그인 (맑은사원)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@malgn.com\",\n  \"password\": \"user123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2. 콘텐츠 조회 - 작성자 '맑은사원' 확인",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contents/2", "host": ["{{baseUrl}}"], "path": ["api", "contents", "2"] }
+          }
+        },
+        {
+          "name": "3. 닉네임 변경",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/members/me/nickname", "host": ["{{baseUrl}}"], "path": ["api", "members", "me", "nickname"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nickname\": \"변경된사원\"\n}"
+            }
+          }
+        },
+        {
+          "name": "4. 콘텐츠 재조회 - 변경된 닉네임 즉시 반영 확인",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contents/2", "host": ["{{baseUrl}}"], "path": ["api", "contents", "2"] }
+          }
+        }
+      ]
+    }
+  ]
+}

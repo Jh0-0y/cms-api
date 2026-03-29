@@ -41,6 +41,4 @@ src/main/generated/
 
 ### macOS ###
 .DS_Store
-
-### docs ###
-docs/
+hydocs/
