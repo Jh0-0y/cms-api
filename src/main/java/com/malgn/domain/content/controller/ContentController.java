@@ -45,7 +45,7 @@ public class ContentController {
             @ApiResponse(responseCode = "400", description = "유효성 검사 실패"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
     })
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "Cookie Authentication")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ContentResponse.Detail createContent(
@@ -73,7 +73,7 @@ public class ContentController {
             @ApiResponse(responseCode = "403", description = "수정 권한 없음"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 콘텐츠")
     })
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "Cookie Authentication")
     @PutMapping("/{id}")
     public ContentResponse.Detail updateContent(
             @Parameter(description = "콘텐츠 ID") @PathVariable Long id,
@@ -89,7 +89,7 @@ public class ContentController {
             @ApiResponse(responseCode = "403", description = "삭제 권한 없음"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 콘텐츠")
     })
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "Cookie Authentication")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deleteContent(

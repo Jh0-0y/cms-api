@@ -14,7 +14,7 @@ public class SwaggerConfiguration {
 
     @Bean
     public OpenAPI openAPI() {
-        String securitySchemeName = "Bearer Authentication";
+        String securitySchemeName = "Cookie Authentication";
 
         return new OpenAPI()
                 .info(new Info()
@@ -24,10 +24,10 @@ public class SwaggerConfiguration {
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName, new SecurityScheme()
-                                .name(securitySchemeName)
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")));
+                                .name("access_token")
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.COOKIE)
+                                .description("로그인 시 발급되는 Access Token (HttpOnly 쿠키)")));
     }
 
 }
