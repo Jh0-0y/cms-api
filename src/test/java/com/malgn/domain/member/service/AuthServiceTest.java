@@ -2,7 +2,6 @@ package com.malgn.domain.member.service;
 
 import com.malgn.common.exception.CustomException;
 import com.malgn.domain.member.dto.MemberRequest;
-import com.malgn.domain.member.dto.TokenRequest;
 import com.malgn.domain.member.dto.TokenResponse;
 import com.malgn.domain.member.entity.Member;
 import com.malgn.domain.member.entity.RefreshToken;
@@ -169,14 +168,10 @@ class AuthServiceTest {
     @DisplayName("토큰 재발급")
     class Refresh {
 
-        private TokenRequest.Refresh request;
         private RefreshToken savedToken;
 
         @BeforeEach
         void setUp() {
-            request = new TokenRequest.Refresh();
-            ReflectionTestUtils.setField(request, "refreshToken", "validRefreshToken");
-
             savedToken = RefreshToken.builder()
                     .token("validRefreshToken")
                     .member(member)
@@ -190,9 +185,9 @@ class AuthServiceTest {
             given(refreshTokenRepository.findByMemberId(1L)).willReturn(Optional.of(savedToken));
             given(jwtTokenProvider.createAccessToken(1L)).willReturn("newAccessToken");
 
-            TokenResponse.AccessToken result = authService.refresh(request);
+            String result = authService.refresh("validRefreshToken");
 
-            assertThat(result.getAccessToken()).isEqualTo("newAccessToken");
+            assertThat(result).isEqualTo("newAccessToken");
         }
 
         @Test
@@ -201,7 +196,7 @@ class AuthServiceTest {
             given(jwtTokenProvider.getMemberId("validRefreshToken")).willReturn(1L);
             given(refreshTokenRepository.findByMemberId(1L)).willReturn(Optional.empty());
 
-            assertThatThrownBy(() -> authService.refresh(request))
+            assertThatThrownBy(() -> authService.refresh("validRefreshToken"))
                     .isInstanceOf(CustomException.class)
                     .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED));
         }
@@ -209,11 +204,10 @@ class AuthServiceTest {
         @Test
         @DisplayName("실패 - 토큰 불일치")
         void tokenMismatch() {
-            ReflectionTestUtils.setField(request, "refreshToken", "differentToken");
             given(jwtTokenProvider.getMemberId("differentToken")).willReturn(1L);
             given(refreshTokenRepository.findByMemberId(1L)).willReturn(Optional.of(savedToken));
 
-            assertThatThrownBy(() -> authService.refresh(request))
+            assertThatThrownBy(() -> authService.refresh("differentToken"))
                     .isInstanceOf(CustomException.class)
                     .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED));
         }

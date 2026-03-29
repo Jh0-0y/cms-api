@@ -28,20 +28,4 @@ public class TokenResponse {
 
     }
 
-    @Schema(description = "Access Token 재발급 응답")
-    @Getter
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class AccessToken {
-
-        @Schema(description = "새로 발급된 Access Token (30분 만료)", example = "eyJ...")
-        private String accessToken;
-
-        public static AccessToken of(String accessToken) {
-            AccessToken response = new AccessToken();
-            response.accessToken = accessToken;
-            return response;
-        }
-
-    }
-
 }

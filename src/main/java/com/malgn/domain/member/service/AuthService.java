@@ -2,7 +2,6 @@ package com.malgn.domain.member.service;
 
 import com.malgn.common.exception.CustomException;
 import com.malgn.domain.member.dto.MemberRequest;
-import com.malgn.domain.member.dto.TokenRequest;
 import com.malgn.domain.member.dto.TokenResponse;
 import com.malgn.domain.member.entity.Member;
 import com.malgn.domain.member.entity.RefreshToken;
@@ -84,10 +83,10 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponse.AccessToken refresh(TokenRequest.Refresh request) {
+    public String refresh(String refreshToken) {
         log.debug("토큰 재발급 시도");
 
-        Long memberId = jwtTokenProvider.getMemberId(request.getRefreshToken());
+        Long memberId = jwtTokenProvider.getMemberId(refreshToken);
 
         RefreshToken savedToken = refreshTokenRepository.findByMemberId(memberId)
                 .orElseThrow(() -> {
@@ -95,7 +94,7 @@ public class AuthService {
                     return new CustomException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
                 });
 
-        if (!savedToken.getToken().equals(request.getRefreshToken())) {
+        if (!savedToken.getToken().equals(refreshToken)) {
             log.debug("토큰 재발급 실패 - 토큰 불일치: memberId={}", memberId);
             throw new CustomException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
@@ -103,7 +102,7 @@ public class AuthService {
         String newAccessToken = jwtTokenProvider.createAccessToken(memberId);
 
         log.info("토큰 재발급 성공: memberId={}", memberId);
-        return TokenResponse.AccessToken.of(newAccessToken);
+        return newAccessToken;
     }
 
     @Transactional
