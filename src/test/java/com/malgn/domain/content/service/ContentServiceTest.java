@@ -84,7 +84,7 @@ class ContentServiceTest {
         @Test
         @DisplayName("성공 - 조회수 증가")
         void success() {
-            given(contentRepository.findById(1L)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
 
             ContentResponse.Detail result = contentService.getContent(1L);
 
@@ -95,7 +95,7 @@ class ContentServiceTest {
         @Test
         @DisplayName("실패 - 존재하지 않는 콘텐츠")
         void notFound() {
-            given(contentRepository.findById(99L)).willReturn(Optional.empty());
+            given(contentRepository.findByIdWithCreatedBy(99L)).willReturn(Optional.empty());
 
             assertThatThrownBy(() -> contentService.getContent(99L))
                     .isInstanceOf(CustomException.class)
@@ -106,7 +106,7 @@ class ContentServiceTest {
         @DisplayName("실패 - 삭제된 콘텐츠")
         void deleted() {
             content.delete();
-            given(contentRepository.findById(1L)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
 
             assertThatThrownBy(() -> contentService.getContent(1L))
                     .isInstanceOf(CustomException.class)
@@ -151,7 +151,7 @@ class ContentServiceTest {
         @Test
         @DisplayName("성공 - 본인")
         void successByOwner() {
-            given(contentRepository.findById(1L)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
 
             ContentResponse.Detail result = contentService.updateContent(1L, request, member);
 
@@ -162,7 +162,7 @@ class ContentServiceTest {
         @Test
         @DisplayName("성공 - ADMIN")
         void successByAdmin() {
-            given(contentRepository.findById(1L)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
 
             ContentResponse.Detail result = contentService.updateContent(1L, request, adminMember);
 
@@ -173,7 +173,7 @@ class ContentServiceTest {
         @Test
         @DisplayName("실패 - 존재하지 않는 콘텐츠")
         void notFound() {
-            given(contentRepository.findById(99L)).willReturn(Optional.empty());
+            given(contentRepository.findByIdWithCreatedBy(99L)).willReturn(Optional.empty());
 
             assertThatThrownBy(() -> contentService.updateContent(99L, request, member))
                     .isInstanceOf(CustomException.class)
@@ -184,7 +184,7 @@ class ContentServiceTest {
         @DisplayName("실패 - 삭제된 콘텐츠")
         void deleted() {
             content.delete();
-            given(contentRepository.findById(1L)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
 
             assertThatThrownBy(() -> contentService.updateContent(1L, request, member))
                     .isInstanceOf(CustomException.class)
@@ -194,9 +194,69 @@ class ContentServiceTest {
         @Test
         @DisplayName("실패 - 권한 없음")
         void forbidden() {
-            given(contentRepository.findById(1L)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
 
             assertThatThrownBy(() -> contentService.updateContent(1L, request, otherMember))
+                    .isInstanceOf(CustomException.class)
+                    .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.FORBIDDEN));
+        }
+
+    }
+
+    @Nested
+    @DisplayName("콘텐츠 복구")
+    class RestoreContent {
+
+        @Test
+        @DisplayName("성공 - 본인")
+        void successByOwner() {
+            content.delete();
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
+
+            ContentResponse.Detail result = contentService.restoreContent(1L, member);
+
+            assertThat(result.getTitle()).isEqualTo("테스트 제목");
+            assertThat(content.getIsDeleted()).isFalse();
+        }
+
+        @Test
+        @DisplayName("성공 - ADMIN")
+        void successByAdmin() {
+            content.delete();
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
+
+            contentService.restoreContent(1L, adminMember);
+
+            assertThat(content.getIsDeleted()).isFalse();
+        }
+
+        @Test
+        @DisplayName("실패 - 존재하지 않는 콘텐츠")
+        void notFound() {
+            given(contentRepository.findByIdWithCreatedBy(99L)).willReturn(Optional.empty());
+
+            assertThatThrownBy(() -> contentService.restoreContent(99L, member))
+                    .isInstanceOf(CustomException.class)
+                    .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.NOT_FOUND));
+        }
+
+        @Test
+        @DisplayName("실패 - 삭제되지 않은 콘텐츠")
+        void notDeleted() {
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
+
+            assertThatThrownBy(() -> contentService.restoreContent(1L, member))
+                    .isInstanceOf(CustomException.class)
+                    .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST));
+        }
+
+        @Test
+        @DisplayName("실패 - 권한 없음")
+        void forbidden() {
+            content.delete();
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
+
+            assertThatThrownBy(() -> contentService.restoreContent(1L, otherMember))
                     .isInstanceOf(CustomException.class)
                     .satisfies(e -> assertThat(((CustomException) e).getStatus()).isEqualTo(HttpStatus.FORBIDDEN));
         }
@@ -210,7 +270,7 @@ class ContentServiceTest {
         @Test
         @DisplayName("성공 - 본인")
         void successByOwner() {
-            given(contentRepository.findById(1L)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
 
             contentService.deleteContent(1L, member);
 
@@ -220,7 +280,7 @@ class ContentServiceTest {
         @Test
         @DisplayName("성공 - ADMIN")
         void successByAdmin() {
-            given(contentRepository.findById(1L)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
 
             contentService.deleteContent(1L, adminMember);
 
@@ -230,7 +290,7 @@ class ContentServiceTest {
         @Test
         @DisplayName("실패 - 존재하지 않는 콘텐츠")
         void notFound() {
-            given(contentRepository.findById(99L)).willReturn(Optional.empty());
+            given(contentRepository.findByIdWithCreatedBy(99L)).willReturn(Optional.empty());
 
             assertThatThrownBy(() -> contentService.deleteContent(99L, member))
                     .isInstanceOf(CustomException.class)
@@ -241,7 +301,7 @@ class ContentServiceTest {
         @DisplayName("실패 - 이미 삭제된 콘텐츠")
         void alreadyDeleted() {
             content.delete();
-            given(contentRepository.findById(1L)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
 
             assertThatThrownBy(() -> contentService.deleteContent(1L, member))
                     .isInstanceOf(CustomException.class)
@@ -251,7 +311,7 @@ class ContentServiceTest {
         @Test
         @DisplayName("실패 - 권한 없음")
         void forbidden() {
-            given(contentRepository.findById(1L)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdWithCreatedBy(1L)).willReturn(Optional.of(content));
 
             assertThatThrownBy(() -> contentService.deleteContent(1L, otherMember))
                     .isInstanceOf(CustomException.class)
