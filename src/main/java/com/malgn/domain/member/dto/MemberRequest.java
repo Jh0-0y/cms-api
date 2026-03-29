@@ -60,4 +60,15 @@ public class MemberRequest {
 
     }
 
+    @Schema(description = "닉네임 변경 요청")
+    @Getter
+    public static class UpdateNickname {
+
+        @Schema(description = "변경할 닉네임", example = "newNick")
+        @NotBlank(message = "닉네임은 필수입니다.")
+        @Size(min = 2, max = 50, message = "닉네임은 2자 이상 50자 이하여야 합니다.")
+        private String nickname;
+
+    }
+
 }

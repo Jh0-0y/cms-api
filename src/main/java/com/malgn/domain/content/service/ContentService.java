@@ -64,8 +64,21 @@ public class ContentService {
         log.info("콘텐츠 삭제 성공: id={}", id);
     }
 
+    @Transactional
+    public ContentResponse.Detail restoreContent(Long id, Member member) {
+        Content content = contentRepository.findByIdWithCreatedBy(id)
+                .orElseThrow(() -> {
+                    log.debug("콘텐츠 복구 실패 - 존재하지 않는 콘텐츠: id={}", id);
+                    return new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 콘텐츠입니다.");
+                });
+        content.validatePermission(member);
+        content.restore();
+        log.info("콘텐츠 복구 성공: id={}", id);
+        return ContentResponse.Detail.of(content);
+    }
+
     private Content findActiveContent(Long id) {
-        Content content = contentRepository.findById(id)
+        Content content = contentRepository.findByIdWithCreatedBy(id)
                 .orElseThrow(() -> {
                     log.debug("콘텐츠 조회 실패 - 존재하지 않는 콘텐츠: id={}", id);
                     return new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 콘텐츠입니다.");

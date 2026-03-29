@@ -85,4 +85,10 @@ public class Content {
         this.isDeleted = true;
     }
 
+    public void restore() {
+        if (!this.isDeleted)
+            throw new CustomException(HttpStatus.BAD_REQUEST, "삭제되지 않은 콘텐츠입니다.");
+        this.isDeleted = false;
+    }
+
 }

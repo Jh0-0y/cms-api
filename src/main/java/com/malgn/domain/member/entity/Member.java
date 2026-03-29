@@ -50,4 +50,9 @@ public class Member {
         this.createdDate = LocalDateTime.now();
     }
 
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+        this.lastModifiedDate = LocalDateTime.now();
+    }
+
 }

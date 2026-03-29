@@ -2,6 +2,7 @@ package com.malgn.domain.content.repository;
 
 import com.malgn.domain.content.entity.Content;
 import com.malgn.domain.content.entity.QContent;
+import com.malgn.domain.member.entity.QMember;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class ContentRepositoryImpl implements ContentRepositoryCustom {
@@ -31,8 +33,11 @@ public class ContentRepositoryImpl implements ContentRepositoryCustom {
             );
         }
 
+        QMember createdBy = new QMember("createdBy");
+
         List<Content> results = queryFactory
                 .selectFrom(content)
+                .join(content.createdBy, createdBy).fetchJoin()
                 .where(condition)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -46,6 +51,20 @@ public class ContentRepositoryImpl implements ContentRepositoryCustom {
                 .fetchOne();
 
         return new PageImpl<>(results, pageable, total == null ? 0 : total);
+    }
+
+    @Override
+    public Optional<Content> findByIdWithCreatedBy(Long id) {
+        QContent content = QContent.content;
+        QMember createdBy = new QMember("createdBy");
+
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(content)
+                        .join(content.createdBy, createdBy).fetchJoin()
+                        .where(content.id.eq(id))
+                        .fetchOne()
+        );
     }
 
     @Override
