@@ -1,7 +1,7 @@
 package com.malgn.configure.security.jwt;
 
-import com.malgn.configure.security.detail.CustomUserDetails;
-import com.malgn.configure.security.detail.CustomUserDetailsService;
+import com.malgn.configure.security.principal.CustomUserDetails;
+import com.malgn.configure.security.principal.CustomUserDetailsService;
 import tools.jackson.databind.ObjectMapper;
 import com.malgn.common.dto.CustomResponse;
 import com.malgn.common.exception.CustomException;

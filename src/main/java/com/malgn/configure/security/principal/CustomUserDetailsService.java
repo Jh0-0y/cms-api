@@ -1,4 +1,4 @@
-package com.malgn.configure.security.detail;
+package com.malgn.configure.security.principal;
 
 import com.malgn.common.exception.CustomException;
 import com.malgn.domain.member.entity.Member;

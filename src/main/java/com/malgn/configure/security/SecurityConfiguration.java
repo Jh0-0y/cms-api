@@ -2,7 +2,7 @@ package com.malgn.configure.security;
 
 import tools.jackson.databind.ObjectMapper;
 import com.malgn.common.dto.CustomResponse;
-import com.malgn.configure.security.detail.CustomUserDetailsService;
+import com.malgn.configure.security.principal.CustomUserDetailsService;
 import com.malgn.configure.security.jwt.JwtAuthenticationFilter;
 import com.malgn.configure.security.jwt.JwtTokenProvider;
 
