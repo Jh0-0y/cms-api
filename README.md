@@ -220,4 +220,4 @@ build/reports/tests/test/index.html
 ## AI 활용
 
 - 사용 도구: Claude Code
-- 활용 방식: 개발 계획 수립, 아키텍처 설계 논의, 코드 리뷰
+- 활용 방식: 개발 계획 수립, 아키텍처 설계 논의, 코드 리뷰, 문서 작성
